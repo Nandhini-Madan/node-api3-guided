@@ -12,8 +12,7 @@ server.use(express.json())
 //3rd party middleware
 //server.use(morgan("combined"))
 //server.use(deny())
-server.use(logger("short"))
-//server.use(user)
+server.use(logger("long"))
 server.use(welcomeRouter)
 server.use(usersRouter)
 server.use((err,req,res,next)=>{
