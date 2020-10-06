@@ -1,6 +1,6 @@
 const express = require("express")
 const users = require("./users-model")
-
+const {checkUserID,checkUserData} =require("../middleware/user")
 const router = express.Router()
 
 router.get("/users", (req, res) => {
@@ -21,23 +21,11 @@ router.get("/users", (req, res) => {
 		})
 })
 
-router.get("/users/:id", (req, res) => {
-	users.findById(req.params.id)
-		.then((user) => {
-			if (user) {
-				res.status(200).json(user)
-			} else {
-				res.status(404).json({
-					message: "User not found",
-				})
-			}
-		})
-		.catch((error) => {
-			console.log(error)
-			res.status(500).json({
-				message: "Error retrieving the user",
-			})
-		})
+router.get("/users/:id", checkUserID(), (req, res) => {
+//user gets attched to the request in 'checkUserID'
+
+	res.status(200).json(req.user)
+
 })
 
 router.post("/users", (req, res) => {
@@ -59,7 +47,7 @@ router.post("/users", (req, res) => {
 		})
 })
 
-router.put("/users/:id", (req, res) => {
+router.put("/users/:id",checkUserData(), checkUserID(),(req, res) => {
 	if (!req.body.name || !req.body.email) {
 		return res.status(400).json({
 			message: "Missing user name or email",
@@ -84,7 +72,7 @@ router.put("/users/:id", (req, res) => {
 		})
 })
 
-router.delete("/users/:id", (req, res) => {
+router.delete("/users/:id",checkUserID(), (req, res) => {
 	users.remove(req.params.id)
 		.then((count) => {
 			if (count > 0) {
